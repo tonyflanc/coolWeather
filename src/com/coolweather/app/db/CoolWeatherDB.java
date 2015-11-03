@@ -1,11 +1,12 @@
-package db;
+package com.coolweather.app.db;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import model.City;
-import model.County;
-import model.Province;
+import com.coolweather.app.model.City;
+import com.coolweather.app.model.County;
+import com.coolweather.app.model.Province;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,7 +32,7 @@ public class CoolWeatherDB {
 	 */
 	private CoolWeatherDB(Context context){
 		CoolWeatherOpenHelper dbHelper=new CoolWeatherOpenHelper(context, DB_NAME, null, VERSION);
-		dbHelper.getWritableDatabase();
+		db=dbHelper.getWritableDatabase();
 	}
 	
 	/**
@@ -123,9 +124,9 @@ public class CoolWeatherDB {
 	public void saveCounty(County county){
 		if(county!=null){
 			ContentValues values=new ContentValues();
-			values.put("county_name", county.getcountyName());
-			values.put("county_code", county.getcountyCode());
-			values.put("city_id", county.getcountyId());
+			values.put("county_name", county.getCountyName());
+			values.put("county_code", county.getCountyCode());
+			values.put("city_id", county.getCityId());
 			db.insert("County", null, values);
 		}
 	}
@@ -133,7 +134,7 @@ public class CoolWeatherDB {
 	/**
 	 * 从数据库读取某城市下所有县的信息
 	 */
-	public List<County> loaderCounties(int cityId){
+	public List<County> loadCounties(int cityId){
 		List<County> list=new ArrayList<County>();
 		Cursor cursor=db.query("County", null, "county_id=?", 
 				new String[]{String.valueOf(cityId)}, null, null, null);
@@ -141,11 +142,11 @@ public class CoolWeatherDB {
 			do{
 		County county=new County();
 		county.setId(cursor.getInt(cursor.getColumnIndex("id")));
-		county.setcountyName(cursor.getString(
+		county.setCountyName(cursor.getString(
 				cursor.getColumnIndex("county_name")));
-		county.setcountyCode(cursor.getString(
+		county.setCountyCode(cursor.getString(
 				cursor.getColumnIndex("county_code")));
-		county.setcountyId(cityId);
+		county.setCityId(cityId);
 			}while(cursor.moveToNext());
 		
 		}
