@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class CoolWeatherDB {
 
@@ -135,18 +136,19 @@ public class CoolWeatherDB {
 	 * 从数据库读取某城市下所有县的信息
 	 */
 	public List<County> loadCounties(int cityId){
+		Log.e("alert", "试图从数据库中读取County信息");
 		List<County> list=new ArrayList<County>();
-		Cursor cursor=db.query("County", null, "county_id=?", 
+		Cursor cursor=db.query("County", null, "city_id=?", 
 				new String[]{String.valueOf(cityId)}, null, null, null);
 		if(cursor.moveToFirst()){
-			do{
-		County county=new County();
-		county.setId(cursor.getInt(cursor.getColumnIndex("id")));
-		county.setCountyName(cursor.getString(
-				cursor.getColumnIndex("county_name")));
-		county.setCountyCode(cursor.getString(
-				cursor.getColumnIndex("county_code")));
-		county.setCityId(cityId);
+		  do{
+		     County county=new County();
+		     county.setId(cursor.getInt(cursor.getColumnIndex("id")));
+		     county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
+		     county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
+		     county.setCityId(cityId);
+		     list.add(county);
+		     Log.e("alert", "确认从数据库中读取County信息");
 			}while(cursor.moveToNext());
 		
 		}
