@@ -16,11 +16,11 @@ import android.util.Log;
 public class CoolWeatherDB {
 
 	/**
-	 * Êı¾İ¿âÃû
+	 * æ•°æ®åº“å
 	 */
 	public static final String DB_NAME="cool_weather";
 	/**
-	 * °æ±¾Ãû
+	 * ç‰ˆæœ¬å
 	 */
 	public static final int VERSION=1;
 	
@@ -29,7 +29,7 @@ public class CoolWeatherDB {
 	private SQLiteDatabase db;
 	
 	/**
-	 * ¹¹Ôì·½·¨Ë½ÓĞ»¯
+	 * æ„é€ æ–¹æ³•ç§æœ‰åŒ–
 	 */
 	private CoolWeatherDB(Context context){
 		CoolWeatherOpenHelper dbHelper=new CoolWeatherOpenHelper(context, DB_NAME, null, VERSION);
@@ -37,7 +37,7 @@ public class CoolWeatherDB {
 	}
 	
 	/**
-	 * »ñÈ¡CoolWeatherDBµÄÊµÀı
+	 * è·å–CoolWeatherDBçš„å®ä¾‹
 	 */
 	public synchronized static CoolWeatherDB getInstance(Context context){
 		if(coolWeatherDB==null){
@@ -47,7 +47,7 @@ public class CoolWeatherDB {
 	}
 	
 	/**
-	 * ½«ProvinceÊµÀı´æ´¢µ½Êı¾İ¿â
+	 * å°†Provinceå®ä¾‹å­˜å‚¨åˆ°æ•°æ®åº“
 	 */
 	public void saveProvince(Province province){
 		if(province!=null){
@@ -58,7 +58,7 @@ public class CoolWeatherDB {
 		}
 	}
 	/**
-	 * ´ÓÊı¾İ¿â¶ÁÈ¡È«¹úËùÓĞÊ¡·İµÄĞÅÏ¢
+	 * ä»æ•°æ®åº“è¯»å–å…¨å›½æ‰€æœ‰çœä»½çš„ä¿¡æ¯
 	 * @return
 	 */
 	public List<Province> loadProvinces(){
@@ -81,7 +81,7 @@ public class CoolWeatherDB {
 	}
 	
 	/**
-	 * ½«CityÊµÀı´æ´¢µ½Êı¾İ¿â
+	 * å°†Cityå®ä¾‹å­˜å‚¨åˆ°æ•°æ®åº“
 	 * @param city
 	 */
 	public void saveCity(City city){
@@ -94,7 +94,7 @@ public class CoolWeatherDB {
 		}
 	}
 	/**
-	 * ´ÓÊı¾İ¿âÖĞ¶ÁÈ¡Ä³Ê¡ÏÂËùÓĞ³ÇÊĞµÄĞÅÏ¢
+	 * ä»æ•°æ®åº“ä¸­è¯»å–æŸçœä¸‹æ‰€æœ‰åŸå¸‚çš„ä¿¡æ¯
 	 * @param provinceId
 	 * @return
 	 */
@@ -119,7 +119,7 @@ public class CoolWeatherDB {
 	}
 	
 	/**
-	 * ½«CountyÊµÀı´æ´¢µ½Êı¾İ¿â
+	 * å°†Countyå®ä¾‹å­˜å‚¨åˆ°æ•°æ®åº“
 	 * @param county
 	 */
 	public void saveCounty(County county){
@@ -133,10 +133,10 @@ public class CoolWeatherDB {
 	}
 	
 	/**
-	 * ´ÓÊı¾İ¿â¶ÁÈ¡Ä³³ÇÊĞÏÂËùÓĞÏØµÄĞÅÏ¢
+	 * ä»æ•°æ®åº“è¯»å–æŸåŸå¸‚ä¸‹æ‰€æœ‰å¿çš„ä¿¡æ¯
 	 */
 	public List<County> loadCounties(int cityId){
-		Log.e("alert", "ÊÔÍ¼´ÓÊı¾İ¿âÖĞ¶ÁÈ¡CountyĞÅÏ¢");
+		
 		List<County> list=new ArrayList<County>();
 		Cursor cursor=db.query("County", null, "city_id=?", 
 				new String[]{String.valueOf(cityId)}, null, null, null);
@@ -148,7 +148,7 @@ public class CoolWeatherDB {
 		     county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
 		     county.setCityId(cityId);
 		     list.add(county);
-		     Log.e("alert", "È·ÈÏ´ÓÊı¾İ¿âÖĞ¶ÁÈ¡CountyĞÅÏ¢");
+		
 			}while(cursor.moveToNext());
 		
 		}

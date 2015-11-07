@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 /**
- * 与服务器端的交互
+ * 涓庢湇鍔″櫒绔殑浜や簰
  * @author Administrator
  *
  */
@@ -33,13 +33,13 @@ public class HttpUtil {
 				    	response.append(line);
 				    }
 				    if(listener!=null){
-				    	 //回调onFinsh()方法
+				    	 
 				    	listener.onFinish(response.toString());
 				    }
 				    
 				  }catch(Exception e){
 					  if(listener!=null){
-						  //回调onError()方法
+						  
 						  listener.onError(e);
 					  }
 				  }finally{

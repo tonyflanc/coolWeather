@@ -1,23 +1,21 @@
 package com.coolweather.app.activity;
 
-import org.w3c.dom.Text;
-
 import com.coolweather.app.R;
+import com.coolweather.app.service.AutoUpdateService;
+//import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
-import android.app.DownloadManager.Query;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,148 +24,128 @@ public class WeatherActivity extends Activity implements OnClickListener{
 
 	private LinearLayout weatherInfoLayout;
 	/**
-	 * ÓÃÓÚÏÔÊ¾³ÇÊĞÃû
+	 * ç”¨äºæ˜¾ç¤ºåŸå¸‚å
 	 */
 	private TextView cityNameText;
 	/**
-	 * ÓÃÓÚÏÔÊ¾·¢²¼Ê±¼ä
+	 * ç”¨äºæ˜¾ç¤ºå‘å¸ƒæ—¶é—´
 	 */
 	private TextView publishText;
 	/**
-	 * ÓÃÓÚÏÔÊ¾ÌìÆøÃèÊöĞÅÏ¢
+	 * ç”¨äºæ˜¾ç¤ºå¤©æ°”æè¿°ä¿¡æ¯
 	 */
 	private TextView weatherDespText;
 	/**
-	 * ÓÃÓÚÏÔÊ¾ÆøÎÂ1
+	 * ç”¨äºæ˜¾ç¤ºæ°”æ¸©1
 	 */
 	private TextView temp1Text;
 	/**
-	 * ÓÃÓÚÏÔÊ¾ÆøÎÂ2
+	 * ç”¨äºæ˜¾ç¤ºæ°”æ¸©2
 	 */
 	private TextView temp2Text;
 	/**
-	 * ÓÃÓÚÏÔÊ¾µ±Ç°ÈÕÆÚ
+	 * ç”¨äºæ˜¾ç¤ºå½“å‰æ—¥æœŸ
 	 */
 	private TextView currentDateText;
 	/**
-	 * ÇĞ»»³ÇÊĞ°´Å¥
+	 * åˆ‡æ¢åŸå¸‚æŒ‰é’®
 	 */
 	private Button switchCity;
 	/**
-	 * ¸üĞÂÌìÆø°´Å¥
+	 * æ›´æ–°å¤©æ°”æŒ‰é’®
 	 */
 	private Button refreshWeather;
 	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.weather_layout);
-		 Log.e("my", "at weather Activity");
-		weatherInfoLayout=(LinearLayout)findViewById(R.id.weather_info_layout);
-		cityNameText=(TextView)findViewById(R.id.city_name);
-		publishText=(TextView)findViewById(R.id.publish_text);
-		weatherDespText=(TextView)findViewById(R.id.weather_desp);
-		temp1Text=(TextView)findViewById(R.id.temp1);
-		temp2Text=(TextView)findViewById(R.id.temp2);
-		currentDateText=(TextView)findViewById(R.id.current_date);
-		switchCity=(Button)findViewById(R.id.switch_city);
-		refreshWeather=(Button)findViewById(R.id.refresh_weather);
-		
-		String countyCode=getIntent().getStringExtra("county_code");
-	    
-		if(!TextUtils.isEmpty(countyCode)){
-			//ÓĞÏØ¼¶´úºÅ¾ÍÈ¥²éÑ¯ÌìÆø
-			publishText.setText("Í¬²½ÖĞ......");
+		// åˆå§‹åŒ–å„æ§ä»¶
+		weatherInfoLayout = (LinearLayout) findViewById(R.id.weather_info_layout);
+		cityNameText = (TextView) findViewById(R.id.city_name);
+		publishText = (TextView) findViewById(R.id.publish_text);
+		weatherDespText = (TextView) findViewById(R.id.weather_desp);
+		temp1Text = (TextView) findViewById(R.id.temp1);
+		temp2Text = (TextView) findViewById(R.id.temp2);
+		currentDateText = (TextView) findViewById(R.id.current_date);
+		switchCity = (Button) findViewById(R.id.switch_city);
+		refreshWeather = (Button) findViewById(R.id.refresh_weather);
+		String countyCode = getIntent().getStringExtra("county_code");
+		if (!TextUtils.isEmpty(countyCode)) {
+			// æœ‰å¿çº§ä»£å·æ—¶å°±å»æŸ¥è¯¢å¤©æ°”
+			publishText.setText("åŒæ­¥ä¸­...");
 			weatherInfoLayout.setVisibility(View.INVISIBLE);
 			cityNameText.setVisibility(View.INVISIBLE);
 			queryWeatherCode(countyCode);
-		}else{
-			//Ã»ÓĞÏØ¼¶´úºÅÊ±¾ÍÖ±½ÓÏÔÊ¾±¾µØÌìÆø
+		} else {
+			// æ²¡æœ‰å¿çº§ä»£å·æ—¶å°±ç›´æ¥æ˜¾ç¤ºæœ¬åœ°å¤©æ°”
 			showWeather();
 		}
-		
 		switchCity.setOnClickListener(this);
 		refreshWeather.setOnClickListener(this);
 	}
-
-
+	
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.switch_city:
-			Intent intent=new Intent(this, ChooseAreaActivity.class);
+			Intent intent = new Intent(this, ChooseAreaActivity.class);
 			intent.putExtra("from_weather_activity", true);
 			startActivity(intent);
 			finish();
 			break;
-			
 		case R.id.refresh_weather:
-			publishText.setText("Í¬²½ÖĞ......");
-			SharedPreferences prefs=PreferenceManager.
-					getDefaultSharedPreferences(this);
-			String weatherCode=prefs.getString("weather_code", "");
-			if(!TextUtils.isEmpty(weatherCode)){
+			publishText.setText("åŒæ­¥ä¸­...");
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			String weatherCode = prefs.getString("weather_code", "");
+			if (!TextUtils.isEmpty(weatherCode)) {
 				queryWeatherInfo(weatherCode);
 			}
-		break;
-
+			break;
 		default:
 			break;
 		}
 	}
+	
 	/**
-	 * ²éÑ¯ÏØ¼¶´úºÅ¶ÔÓ¦µÄÌìÆø´úºÅ
-	 * @param countyCode
+	 * æŸ¥è¯¢å¿çº§ä»£å·æ‰€å¯¹åº”çš„å¤©æ°”ä»£å·ã€‚
 	 */
 	private void queryWeatherCode(String countyCode) {
-		// TODO Auto-generated method stub
-		String address="http://www.weather.com.cn/data/list3/city"+countyCode+".xml";
-		queryFromServer(address,"countyCode");
+		String address = "http://www.weather.com.cn/data/list3/city" + countyCode + ".xml";
+		queryFromServer(address, "countyCode");
 	}
-    
+
 	/**
-     * ²éÑ¯ÌìÆø´úºÅ¶ÔÓ¦µÄÌìÆø
-     * @param weatherCode
-     */
+	 * æŸ¥è¯¢å¤©æ°”ä»£å·æ‰€å¯¹åº”çš„å¤©æ°”ã€‚
+	 */
 	private void queryWeatherInfo(String weatherCode) {
-		// TODO Auto-generated method stub
-		String address="http://www.weather.com.cn/data/cityInfo/"+weatherCode+".html";
+		String address = "http://www.weather.com.cn/data/cityinfo/" + weatherCode + ".html";
 		queryFromServer(address, "weatherCode");
 	}
+	
 	/**
-	 * ¸ù¾İ´«ÈëµÄµØÖ·ºÍÀàĞÍÈ¥Ïò·şÎñÆ÷²éÑ¯ÌìÆø´úºÅ»òÕßÌìÆøĞÅÏ¢
-	 * @param address
-	 * @param string
+	 * æ ¹æ®ä¼ å…¥çš„åœ°å€å’Œç±»å‹å»å‘æœåŠ¡å™¨æŸ¥è¯¢å¤©æ°”ä»£å·æˆ–è€…å¤©æ°”ä¿¡æ¯ã€‚
 	 */
-	private void queryFromServer(final String address,final String type) {
-		// TODO Auto-generated method stub
-		 Log.e("my", "queryfromServer");
+	private void queryFromServer(final String address, final String type) {
 		HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-			
 			@Override
 			public void onFinish(final String response) {
-				// TODO Auto-generated method stub
-				if("countyCode".equals(type)){
-					if(!TextUtils.isEmpty(response)){
-						//´Ó·şÎñÆ÷·µ»ØµÄÊı¾İÖĞ½âÎö³öÌìÆø´úºÅ
-						String[] array=response.split("\\|");
-						if(array!=null&&array.length==2){
-							String weatherCode=array[1];
+				if ("countyCode".equals(type)) {
+					if (!TextUtils.isEmpty(response)) {
+						// ä»æœåŠ¡å™¨è¿”å›çš„æ•°æ®ä¸­è§£æå‡ºå¤©æ°”ä»£å·
+						String[] array = response.split("\\|");
+						if (array != null && array.length == 2) {
+							String weatherCode = array[1];
 							queryWeatherInfo(weatherCode);
 						}
 					}
-				}else if("weatherCode".equals(type)){
-					//´¦Àí·şÎñÆ÷·µ»ØµÄÌìÆøĞÅÏ¢
+				} else if ("weatherCode".equals(type)) {
+					// å¤„ç†æœåŠ¡å™¨è¿”å›çš„å¤©æ°”ä¿¡æ¯
 					Utility.handleWeatherResponse(WeatherActivity.this, response);
 					runOnUiThread(new Runnable() {
-						
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							showWeather();
 						}
 					});
@@ -176,13 +154,10 @@ public class WeatherActivity extends Activity implements OnClickListener{
 			
 			@Override
 			public void onError(Exception e) {
-				// TODO Auto-generated method stub
 				runOnUiThread(new Runnable() {
-					
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
-						publishText.setText("Í¬²½Ê§°Ü");
+						publishText.setText("åŒæ­¥å¤±è´¥");
 					}
 				});
 			}
@@ -190,22 +165,20 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	}
 	
 	/**
-	 * ´ÓSharePreferencesÎÄ¼şÖĞ¶ÁÈ¡´æ´¢µÄÌìÆøĞÅÏ¢£¬²¢ÏÔÊ¾µ½½çÃæÉÏ
+	 * ä»SharedPreferencesæ–‡ä»¶ä¸­è¯»å–å­˜å‚¨çš„å¤©æ°”ä¿¡æ¯ï¼Œå¹¶æ˜¾ç¤ºåˆ°ç•Œé¢ä¸Šã€‚
 	 */
-	
 	private void showWeather() {
-		// TODO Auto-generated method stub
-		SharedPreferences prefs=PreferenceManager.
-				getDefaultSharedPreferences(this);
-		cityNameText.setText(prefs.getString("city_name", ""));
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		cityNameText.setText( prefs.getString("city_name", ""));
 		temp1Text.setText(prefs.getString("temp1", ""));
 		temp2Text.setText(prefs.getString("temp2", ""));
 		weatherDespText.setText(prefs.getString("weather_desp", ""));
-		publishText.setText("½ñÌì"+prefs.getString("publish_time", "")+"·¢²¼");
+		publishText.setText("ä»Šå¤©" + prefs.getString("publish_time", "") + "å‘å¸ƒ");
 		currentDateText.setText(prefs.getString("current_date", ""));
 		weatherInfoLayout.setVisibility(View.VISIBLE);
 		cityNameText.setVisibility(View.VISIBLE);
-		
+		Intent intent = new Intent(this, AutoUpdateService.class);
+		startService(intent);
 	}
 
 }

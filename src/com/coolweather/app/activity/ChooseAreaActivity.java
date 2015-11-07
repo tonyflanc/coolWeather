@@ -31,7 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 /**
- * ±éÀúÊ¡ÊĞÏØµÄÊı¾İ
+ *  éå†çœå¸‚å¿çš„æ•°æ®
  * @author Administrator
  *
  */
@@ -47,37 +47,43 @@ public class ChooseAreaActivity extends Activity{
 	private CoolWeatherDB coolWeatherDB;
     private List<String> dataList=new ArrayList<String>();
     /**
-     * Ê¡ÁĞ±í		
+     * çœåˆ—è¡¨		
      */
     private List<Province> provinceList;
     /**
-     * ÊĞÁĞ±í
+     * å¸‚åˆ—è¡¨
      */
     private List<City> cityList;
     /**
-     * ÏØÁĞ±í
+     * å¿åˆ—è¡¨
      */
     private List<County> countyList;
      /**
-      * Ñ¡ÖĞµÄÊ¡·İ
+      * é€‰ä¸­çš„çœä»½
       */
     private Province selectedProvince;
     /**
-     * Ñ¡ÖĞµÄ³ÇÊĞ
+     * é€‰ä¸­çš„åŸå¸‚
      */
     private City selectedCity;
     /**
-     * µ±Ç°Ñ¡ÖĞµÄ¼¶±ğ
+     * å½“å‰é€‰ä¸­çš„çº§åˆ«
      */
     private int currentLevel;
+    /**
+     * æ˜¯å¦ä»WeatherActivityä¸­è·³è½¬è¿‡æ¥
+     */
+    private boolean isFromWeatherActivity;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);	
-		
+		isFromWeatherActivity=getIntent().getBooleanExtra("from_weather_activity", false);
+
 		SharedPreferences prefs=PreferenceManager.
 				getDefaultSharedPreferences(this);
-		if(prefs.getBoolean("city_selected", false)){
+		//å·²ç»é€‰æ‹©äº†åŸå¸‚å¹¶ä¸”ä¸æ˜¯ä»WeatherActivityè·³è½¬è¿‡æ¥æ‰ä¼šç›´æ¥è·³è½¬åˆ°WeatherActivity
+		if(prefs.getBoolean("city_selected", false)&&!isFromWeatherActivity){
 			Intent intent=new Intent(this, WeatherActivity.class);
 			startActivity(intent);
 			finish();
@@ -103,11 +109,9 @@ public class ChooseAreaActivity extends Activity{
 					queryCities();
 				}else if(currentLevel==LEVEL_CITY){
 					selectedCity=cityList.get(index);
-					Log.e("alert", "µã»÷³ÇÊĞ²Ëµ¥ÊÔÍ¼½øÈëÏØ²Ëµ¥£¬¼ìË÷ÏØÃû");
 					queryCounties();
 				}else if(currentLevel==LEVEL_COUNTY){
 					String countyCode=countyList.get(index).getCountyCode();
-					Log.e("alert", "level county");
 					Intent intent=new Intent(ChooseAreaActivity.this,WeatherActivity.class);
 					intent.putExtra("county_code", countyCode);
 					startActivity(intent);
@@ -116,11 +120,11 @@ public class ChooseAreaActivity extends Activity{
 			}
 			
 		});
-		queryProvinces();//¼ÓÔØÊ¡¼¶Êı¾İ		
+		queryProvinces();//åŠ è½½çœçº§æ•°æ®		
 	}
    
 	/**
-	 * ²éÑ¯È«¹úËùÓĞµÄÊ¡£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éÑ¯µ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+	 * æŸ¥è¯¢å…¨å›½æ‰€æœ‰çš„çœï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥è¯¢åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
 	 */
 	private void queryProvinces(){
 	   provinceList=coolWeatherDB.loadProvinces();
@@ -131,10 +135,10 @@ public class ChooseAreaActivity extends Activity{
 		   }
 		   adapter.notifyDataSetChanged();
 		   listView.setSelection(0);
-		   titleText.setText("ÖĞ¹ú");
+		   titleText.setText("ä¸­å›½");
 		   currentLevel=LEVEL_PROVINCE;
 	   }else{
-		   //µ½·şÎñÆ÷ÉÏ²éÕÒ
+		 //åˆ°æœåŠ¡å™¨ä¸ŠæŸ¥æ‰¾
 		   queryFromServer(null,"province");
 	   }
 	   
@@ -158,10 +162,8 @@ public class ChooseAreaActivity extends Activity{
 	}
    
 	private void queryCounties(){
-		Log.e("alert", "½øÈëquery counties()");
 	   countyList=coolWeatherDB.loadCounties(selectedCity.getId());
 	   if(countyList.size()>0){
-		   Log.e("alert", "countyListÖĞÓĞÊı¾İ");
 		   dataList.clear();
 		   for(County county:countyList){
 			   dataList.add(county.getCountyName());
@@ -171,7 +173,6 @@ public class ChooseAreaActivity extends Activity{
 		   titleText.setText(selectedCity.getCityName());
 		   currentLevel=LEVEL_COUNTY;		   
 	   }else{
-		   Log.e("alert", "countyListÖĞÃ»ÓĞÊı¾İ£¬½øÈëqueryFromServer");
 		   queryFromServer(selectedCity.getCityCode(), "county");
 	   }
    
@@ -204,11 +205,10 @@ public class ChooseAreaActivity extends Activity{
 				}else if("city".equals(type)){
 					result=Utility.handleCitiesResponse(coolWeatherDB, response, selectedProvince.getId());					
 				}else if("county".equals(type)){
-					 Log.e("alert", "queryFromServer()");
 					result=Utility.handleCountiesResponse(coolWeatherDB, response, selectedCity.getId());
 				}
 				if(result){
-					//Í¨¹ırunOnUiThread»Øµ½Ö÷Ïß³Ì´¦ÀíÂß¼­
+					//é€šè¿‡runOnUiThreadå›åˆ°ä¸»çº¿ç¨‹å¤„ç†é€»è¾‘
 					runOnUiThread(new Runnable(){                 
 						@Override
 						public void run() {
@@ -219,7 +219,6 @@ public class ChooseAreaActivity extends Activity{
 							}else if("city".equals(type)){
 								queryCities();
 							}else if("county".equals(type)){
-								Log.e("alert", "queryCounties Thread");
 								queryCounties();
 							}
 						}
@@ -230,14 +229,14 @@ public class ChooseAreaActivity extends Activity{
 
 			@Override
 			public void onError(Exception e) {
-				// Í¨¹ırunOnUiThread»Øµ½Ö÷Ïß³Ì´¦ÀíÂß¼­
+				// é€šè¿‡runOnUiThreadå›åˆ°ä¸»çº¿ç¨‹å¤„ç†é€»è¾‘
 				runOnUiThread(new Runnable() {
 					
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
 					    closeProgressDialog();
-					    Toast.makeText(ChooseAreaActivity.this, "¼ÓÔØÊ§°Ü", Toast.LENGTH_SHORT).show();
+					    Toast.makeText(ChooseAreaActivity.this, "åŠ è½½å¤±è´¥", Toast.LENGTH_SHORT).show();
 					}
 				});
 				
@@ -247,29 +246,28 @@ public class ChooseAreaActivity extends Activity{
 	}
 
 	/**
-	 * ÏÔÊ¾½ø¶È¶Ô»°¿ò
+	 * æ˜¾ç¤ºè¿›åº¦å¯¹è¯æ¡†
 	 */
 	private void showProgressDialog() {
 		// TODO Auto-generated method stub
 		if(progressDialog==null){
 			progressDialog=new ProgressDialog(this);
-			progressDialog.setMessage("ÕıÔÚ¼ÓÔØ");
+			progressDialog.setMessage("æ­£åœ¨åŠ è½½");
 			progressDialog.setCanceledOnTouchOutside(false);
 		}
 		progressDialog.show();
 	}
 	/**
-	 * ¹Ø±Õ½ø¶È¶Ô»°¿ò
+	 * å…³é—­è¿›åº¦å¯¹è¯æ¡†
 	 */
 	private void closeProgressDialog(){
 		if(progressDialog!=null){
 			progressDialog.dismiss();
-			Log.e("alert", "ÒÑÖ´ĞĞcloseProgressDialog()");
 		}
 	}
 	
 	/**
-	 * ²¶»ñBack°´¼ü£¬¸ù¾İµ±Ç°µÄ¼¶±ğÀ´ÅĞ¶Ï£¬´ËÊ±Ó¦µ±·µ»ØÊĞÁĞ±í£¬Ê¡ÁĞ±í£¬»¹ÊÇÖ±½ÓÍË³ö¡£
+	 * æ•è·BackæŒ‰é”®ï¼Œæ ¹æ®å½“å‰çš„çº§åˆ«æ¥åˆ¤æ–­ï¼Œæ­¤æ—¶åº”å½“è¿”å›å¸‚åˆ—è¡¨ï¼Œçœåˆ—è¡¨ï¼Œè¿˜æ˜¯ç›´æ¥é€€å‡ºã€‚
 	 */
 	@Override
 	public void onBackPressed() {
@@ -279,6 +277,10 @@ public class ChooseAreaActivity extends Activity{
 		}else if(currentLevel==LEVEL_CITY){
 			queryProvinces();
 		}else{
+			if(isFromWeatherActivity){
+				Intent intent=new Intent(this,WeatherActivity.class);
+				startActivity(intent);
+			}
 			finish();
 		}
 	}
